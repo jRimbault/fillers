@@ -1,0 +1,62 @@
+name: CI
+
+on: push
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check ${{ matrix.task.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        task:
+          - name: Formatting
+            run: ruff format --check
+          - name: Linting
+            run: ruff check
+          - name: Typechecking
+            run: pyright
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install uv
+          uv sync --all-groups
+
+      - name: ${{ matrix.task.name }}
+        run: |
+          source .venv/bin/activate
+          ${{ matrix.task.run }}
+
+  unit_test:
+    name: Unit Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install uv
+          uv sync --all-groups
+
+      - name: Unit Tests
+        run: |
+          ./.venv/Scripts/activate || source .venv/bin/activate
+          uv pip install -e .
+          pytest -v

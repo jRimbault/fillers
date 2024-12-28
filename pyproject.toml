@@ -1,0 +1,48 @@
+[project]
+name = "fillers"
+version = "0.1.0"
+description = "List Anime filler"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "pandas>=2.2.3",
+    "pick>=0.6.7",
+    "requests>=2.32.3",
+    "tabulate>=0.9.0",
+    "tvdb-v4-official>=1.1.0",
+]
+
+[dependency-groups]
+build = ["pyright>=1.1.391", "ruff>=0.8.4"]
+test = ["pytest>=8.3.4", "pytest-cov>=6.0.0"]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+# disable subset of strict because of pandas and tabulate
+reportUnknownMemberType = false
+reportMissingTypeStubs = false
+reportUnsupportedDunderAll = false
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+    "--cov=fillers",
+    "--cov-report=xml:coverage.xml",
+]
